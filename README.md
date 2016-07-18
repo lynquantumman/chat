@@ -1,5 +1,6 @@
 # chat
 @desc This is a small chat program with input text area, display text area, send button and link button.
+@flaws there still are some bugs in it.
 @author Cradle Lee aka. QuantumMan
 @howToUseIt the compiling sequence should be 
   1.UDPLink.java
