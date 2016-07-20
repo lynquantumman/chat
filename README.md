@@ -4,5 +4,6 @@
 @author Cradle Lee aka. QuantumMan
 @howToUseIt the compiling sequence should be 
   1.UDPLink.java
+  1.5 set classpath="where the UDPLink is "
   2.ChatGUI.java
   3.Test.java
