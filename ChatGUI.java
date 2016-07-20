@@ -11,22 +11,23 @@ public class ChatGUI{
 	JTextArea inputTA;
 	JTextArea dispTA;
 	JButton sendButton;
-	JButton linkButton;
 	int selfPort;
 	int port;//port here is other's port
 	String ip;//ip here is other's ip
 
 	UDPLink link;
 
-	public ChatGUI(){
+	public ChatGUI(int selfPort, String ip, int port){
 		chatFrame();
-
-		int selfPort=8888;
-		int port=8889;//port here is other's port
-		String ip="192.168.240.205";//ip here is other's ip
-
 		chatEvent();
-		Thread thrd = new Thread(new Receive(dispTA, link));
+		//create a new thread to realize the receive function
+		try{
+			link = new UDPLink(selfPort, ip, port);
+		}
+		catch(Exception exLink){
+			throw new RuntimeException();
+		}				
+		Thread thrd = new Thread(new Receive());//link is null here
 		thrd.start();
 	}
 
@@ -35,18 +36,15 @@ public class ChatGUI{
 		frame.setLayout(new FlowLayout()); 
 		frame.setBounds(300,200,650,400);
 		
-		dispTA = new JTextArea(15,50);//7rows 10columns
+		dispTA = new JTextArea(15,50);
 			frame.add(dispTA);
 		inputTA = new JTextArea(5,50);
 			frame.add(inputTA);
 		sendButton = new JButton("send");
 			frame.add(sendButton); 
-		linkButton = new JButton("link");
-
-		frame.setVisible(true);
-
 		
 
+		frame.setVisible(true);
 	}
 
 	public void chatEvent(){//this func is to add WindowListener
@@ -78,45 +76,22 @@ public class ChatGUI{
 			}
 		);
 
-
-		linkButton.addActionListener(
-			new ActionListener(){
-				@Override
-				public void actionPerformed(ActionEvent eLink) 
-				{
-					try{
-						link = new UDPLink(selfPort, ip, port);
-					}
-					catch(Exception exLink){
-						throw new RuntimeException();
-					}
-				}
-			}
-		);
-
-
-
 	}
 
 //inner class
 	class Receive implements Runnable//multi-thread has the other implementation.
 	{
-		private UDPLink link;
-		private JTextArea dispTA;
+		
 		private String msg;
-		public Receive(JTextArea dispTA, UDPLink link){//initialization
-			this.link = link;
-			this.dispTA = dispTA;
-		}
-
-
 		@Override
 		public void run() 
 		{
 			try
 			{
-				msg = link.receive();
-				dispTA.append(msg);
+				while(true){
+					msg = ChatGUI.this.link.receive();
+					ChatGUI.this.dispTA.append(msg);
+				}
 			
 			}
 			catch(Exception exReceive){
